@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>El Niño & the softs volatility signal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EDF2F1; --paper-2:#E2EAE8; --card:#F6F9F8;
+    --ink:#0E2A33; --ink-soft:#4C636B; --line:rgba(14,42,51,.13);
+    --warm:#C6551F;        /* El Niño — warm phase */
+    --warm-soft:rgba(198,85,31,.12);
+    --cool:#2A6C8C;        /* La Niña — cool phase */
+    --cool-soft:rgba(42,108,140,.12);
+    --signal:#1C6A57;      /* the significant finding (sugar vol) */
+    --signal-soft:rgba(28,106,87,.12);
+    --maxw:1080px; --col:740px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:"Newsreader",Georgia,serif; font-size:19px; line-height:1.62;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:var(--maxw); margin:0 auto; padding:0 28px}
+  .col{max-width:var(--col); margin-left:auto; margin-right:auto}
+  h1,h2,h3,.dfont{font-family:"Space Grotesk",system-ui,sans-serif}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,monospace}
+  .eyebrow{font-family:"IBM Plex Mono",monospace; font-size:12.5px; letter-spacing:.18em;
+    text-transform:uppercase; color:var(--ink-soft); font-weight:500}
+  a{color:var(--warm)}
+
+  /* ---------- HERO ---------- */
+  header.hero{padding:64px 0 30px; border-bottom:1px solid var(--line)}
+  .tagrow{display:flex; align-items:center; gap:12px; flex-wrap:wrap; margin-bottom:26px}
+  .live{display:inline-flex; align-items:center; gap:8px; font-family:"IBM Plex Mono",monospace;
+    font-size:12.5px; letter-spacing:.06em; color:var(--warm); background:var(--warm-soft);
+    padding:6px 12px; border-radius:100px; font-weight:500}
+  .live .dot{width:8px; height:8px; border-radius:50%; background:var(--warm); animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(1.5)}}
+  h1{font-size:clamp(38px,6.4vw,68px); line-height:1.02; letter-spacing:-.02em; font-weight:600;
+    margin:.1em 0 .35em}
+  h1 em{font-style:normal; color:var(--warm)}
+  .lede{font-size:clamp(20px,2.4vw,25px); color:var(--ink); max-width:30em; line-height:1.5}
+  .byline{margin-top:24px; font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-soft)}
+
+  /* ---------- ONI WAVE (signature) ---------- */
+  .wavewrap{margin:38px 0 4px; position:relative}
+  .wavewrap svg{width:100%; height:auto; display:block; overflow:visible}
+  .wave-path{fill:none; stroke:var(--cool); stroke-width:2.4;
+    stroke-dasharray:1400; stroke-dashoffset:1400; animation:draw 3.4s ease-out .3s forwards}
+  .wave-warm{stroke:var(--warm)}
+  @keyframes draw{to{stroke-dashoffset:0}}
+  .thresh{stroke:var(--warm); stroke-width:1.3; stroke-dasharray:5 5; opacity:.7}
+  .zeroline{stroke:var(--line); stroke-width:1}
+  .today{fill:var(--warm)}
+  .today-ring{fill:none; stroke:var(--warm); stroke-width:2; transform-origin:center;
+    animation:ring 2.6s ease-out infinite}
+  @keyframes ring{0%{r:5;opacity:.9}100%{r:20;opacity:0}}
+  .wlabel{font-family:"IBM Plex Mono",monospace; font-size:12px; fill:var(--ink-soft)}
+  .wlabel.warm{fill:var(--warm)}
+
+  /* ---------- KEY FINDING ---------- */
+  .keybox{margin:52px auto 0; background:var(--ink); color:#EAF1F0; border-radius:18px;
+    padding:40px 42px; max-width:var(--maxw)}
+  .keybox .eyebrow{color:#7FA6AE}
+  .keybox h2{font-size:clamp(24px,3vw,32px); line-height:1.22; font-weight:500; margin:14px 0 0;
+    letter-spacing:-.01em}
+  .keybox h2 b{color:#F0A878; font-weight:600}
+  .keystats{display:flex; gap:38px; flex-wrap:wrap; margin-top:28px; padding-top:26px;
+    border-top:1px solid rgba(255,255,255,.14)}
+  .kstat .n{font-family:"Space Grotesk",sans-serif; font-size:34px; font-weight:600; line-height:1}
+  .kstat .n.good{color:#6FD3AE}
+  .kstat .l{font-family:"IBM Plex Mono",monospace; font-size:12px; color:#9FBDC2; margin-top:8px;
+    letter-spacing:.03em}
+
+  /* ---------- SECTIONS ---------- */
+  section{padding:58px 0}
+  section + section{border-top:1px solid var(--line)}
+  .snum{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--warm); font-weight:500}
+  h2.sh{font-size:clamp(26px,3.4vw,38px); line-height:1.08; letter-spacing:-.015em; font-weight:600;
+    margin:.3em 0 .6em}
+  p{margin:0 0 1.05em}
+  .col p:last-child{margin-bottom:0}
+  strong{font-weight:600}
+
+  /* method steps */
+  .steps{counter-reset:s; margin-top:14px}
+  .step{display:grid; grid-template-columns:44px 1fr; gap:20px; padding:22px 0; border-top:1px solid var(--line)}
+  .step:first-child{border-top:none}
+  .step::before{counter-increment:s; content:counter(s,decimal-leading-zero);
+    font-family:"IBM Plex Mono",monospace; font-size:14px; color:var(--warm); font-weight:600; padding-top:3px}
+  .step h3{font-family:"Space Grotesk",sans-serif; font-size:20px; margin:0 0 6px; font-weight:600; letter-spacing:-.01em}
+  .step p{font-size:17px; color:var(--ink); margin:0}
+  .step .why{color:var(--ink-soft); font-size:16px; margin-top:6px}
+  .step .why b{color:var(--ink); font-weight:600}
+
+  /* findings */
+  .finding{padding:34px; border-radius:16px; background:var(--card); border:1px solid var(--line); margin-top:26px}
+  .finding.f-warm{border-left:4px solid var(--warm)}
+  .finding.f-cool{border-left:4px solid var(--cool)}
+  .finding.f-signal{border-left:4px solid var(--signal); background:var(--signal-soft)}
+  .verdict{display:inline-flex; align-items:center; gap:7px; font-family:"IBM Plex Mono",monospace;
+    font-size:12px; letter-spacing:.05em; text-transform:uppercase; padding:5px 11px; border-radius:100px; font-weight:600}
+  .v-no{background:rgba(14,42,51,.08); color:var(--ink-soft)}
+  .v-maybe{background:var(--warm-soft); color:var(--warm)}
+  .v-yes{background:var(--signal); color:#fff}
+  .finding h3{font-family:"Space Grotesk",sans-serif; font-size:23px; font-weight:600; margin:14px 0 .5em; letter-spacing:-.01em}
+  .finding p{font-size:17.5px; margin-bottom:0}
+
+  /* tables */
+  table{width:100%; border-collapse:collapse; margin:22px 0 6px; font-family:"IBM Plex Mono",monospace; font-size:14px}
+  caption{text-align:left; font-family:"IBM Plex Mono",monospace; font-size:12px; letter-spacing:.04em;
+    color:var(--ink-soft); text-transform:uppercase; padding-bottom:10px}
+  th,td{text-align:right; padding:9px 10px; border-bottom:1px solid var(--line)}
+  th:first-child,td:first-child{text-align:left}
+  thead th{color:var(--ink-soft); font-weight:500; border-bottom:1.5px solid var(--ink)}
+  td.pos{color:var(--signal)} td.neg{color:var(--warm)}
+  tr.hi td{background:var(--signal-soft); font-weight:600}
+  .sig{color:var(--signal); font-weight:600}
+
+  /* figures */
+  .fig{margin:30px 0 4px}
+  .fig-frame{border:1px solid var(--line); border-radius:14px; overflow:hidden; background:var(--card);
+    min-height:200px; display:flex; align-items:center; justify-content:center}
+  .fig-frame img{width:100%; display:block}
+  .fig-ph{width:100%; padding:44px 24px; text-align:center; background:
+      repeating-linear-gradient(135deg,transparent,transparent 11px,rgba(14,42,51,.03) 11px,rgba(14,42,51,.03) 22px)}
+  .fig-ph .mono{font-size:13px; color:var(--ink-soft)}
+  .fig-ph .tag{display:inline-block; margin-bottom:10px; font-family:"Space Grotesk",sans-serif;
+    font-weight:600; font-size:16px; color:var(--ink)}
+  figcaption{font-family:"IBM Plex Mono",monospace; font-size:13px; color:var(--ink-soft); margin-top:12px; line-height:1.5}
+  figcaption b{color:var(--ink); font-weight:600}
+
+  /* limitations */
+  .lims{list-style:none; padding:0; margin:12px 0 0}
+  .lims li{padding:14px 0 14px 26px; border-top:1px solid var(--line); position:relative; font-size:17px; color:var(--ink)}
+  .lims li::before{content:"—"; position:absolute; left:0; color:var(--warm); font-family:"IBM Plex Mono",monospace}
+
+  .pull{font-family:"Space Grotesk",sans-serif; font-size:clamp(21px,2.6vw,27px); line-height:1.34;
+    font-weight:500; letter-spacing:-.01em; margin:6px 0; color:var(--ink)}
+  .pull b{color:var(--signal); font-weight:600}
+
+  footer{padding:52px 0 64px; border-top:1px solid var(--line); color:var(--ink-soft)}
+  .foot-grid{display:flex; gap:48px; flex-wrap:wrap; justify-content:space-between}
+  footer .mono{font-size:13px; line-height:1.9}
+  footer a{color:var(--ink); text-decoration:none; border-bottom:1px solid var(--line)}
+
+  @media (max-width:640px){
+    body{font-size:18px}
+    .keybox,.finding{padding:26px}
+    .keystats{gap:24px}
+    .step{grid-template-columns:32px 1fr; gap:14px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important}
+    .wave-path{stroke-dashoffset:0}
+  }
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <!-- ============ HERO ============ -->
+  <header class="hero">
+    <div class="tagrow">
+      <span class="eyebrow">Quant markets research · 2026</span>
+      <span class="live"><span class="dot"></span>LIVE · super El Niño forming</span>
+    </div>
+    <h1>An ocean index, and the <em>volatility</em> hidden in soft commodities</h1>
+    <p class="lede">Everyone says El Niño lifts coffee, cocoa and sugar prices. Tested properly, the popular directional trade collapses — and the real, statistically significant signal turns out to be somewhere else entirely.</p>
+    <p class="byline">Maximilian Jost · data: NOAA CPC + ICE futures · Python / statsmodels</p>
+
+    <!-- signature: the ONI wave crossing the El Niño threshold to today -->
+    <div class="wavewrap" aria-hidden="true">
+      <svg viewBox="0 0 1080 190" preserveAspectRatio="none" role="img">
+        <line class="zeroline" x1="0" y1="130" x2="1080" y2="130"/>
+        <line class="thresh"   x1="0" y1="92"  x2="1080" y2="92"/>
+        <!-- La Niña / neutral history -->
+        <path class="wave-path" d="M0,120 C60,70 110,175 170,150 S280,60 340,120 S450,180 520,150 S620,95 690,120 S780,170 840,150"/>
+        <!-- warm ramp into today, crossing threshold -->
+        <path class="wave-path wave-warm" d="M840,150 C900,150 940,120 980,70 S1030,20 1055,24"/>
+        <circle class="today-ring" cx="1055" cy="24" r="5"/>
+        <circle class="today" cx="1055" cy="24" r="5"/>
+        <text class="wlabel warm" x="1030" y="16" text-anchor="end">today +0.98</text>
+        <text class="wlabel warm" x="6" y="86">El Niño +0.5</text>
+        <text class="wlabel" x="6" y="146">neutral 0.0</text>
+      </svg>
+    </div>
+  </header>
+</div>
+
+<!-- ============ KEY FINDING ============ -->
+<div class="wrap">
+  <div class="keybox">
+    <span class="eyebrow">The finding in one line</span>
+    <h2>The tradeable ENSO signal in softs isn't a directional bet — it's <b>long sugar volatility</b> into an extreme event. And a strong one is forming right now.</h2>
+    <div class="keystats">
+      <div class="kstat"><div class="n good">t = 2.72</div><div class="l">sugar vol vs |ONI| · p = 0.006</div></div>
+      <div class="kstat"><div class="n">4 / 7</div><div class="l">directional trade hit-rate · ≈ coin flip</div></div>
+      <div class="kstat"><div class="n">+0.98</div><div class="l">current ONI · above El Niño threshold</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ THE QUESTION ============ -->
+  <section>
+    <div class="col">
+      <span class="snum">01 — The question</span>
+      <h2 class="sh">Why would the Pacific Ocean move the price of chocolate?</h2>
+      <p>There's a well-worn market story: <strong>El Niño</strong> — a warming of the equatorial Pacific — disrupts weather across the tropics, damages harvests, and pushes up soft-commodity prices. The index that measures it, the <strong>ONI</strong> (Oceanic Niño Index), is just how many degrees above or below normal that patch of ocean is. Above +0.5 °C is El Niño; below −0.5 °C is its cool twin, La Niña.</p>
+      <p>The commodities most exposed grow in narrow, weather-sensitive belts: cocoa in West Africa, sugar in Brazil and India, coffee in Brazil and Vietnam. So the story is plausible. But "plausible" and "tradeable" are different things — and popular market stories are exactly the ones worth testing rather than repeating. This project asks a simple question honestly: <strong>if you had traded on El Niño, would it actually have worked?</strong></p>
+    </div>
+  </section>
+
+  <!-- ============ THE DATA ============ -->
+  <section>
+    <div class="col">
+      <span class="snum">02 — The data</span>
+      <h2 class="sh">Two free, public sources</h2>
+      <p><strong>The climate signal</strong> — the monthly ONI back to 1950, published by NOAA's Climate Prediction Center. <strong>The prices</strong> — front-month cocoa, sugar and coffee futures, plus the Brazilian real as a control, from public market data. Everything is reproducible: anyone can rerun the code and get the same numbers, which is the point.</p>
+    </div>
+  </section>
+
+  <!-- ============ METHOD ============ -->
+  <section>
+    <div class="col">
+      <span class="snum">03 — How we tested it</span>
+      <h2 class="sh">Seven steps, in plain terms</h2>
+      <p>Each step exists to remove a way we could have fooled ourselves. Read together, they're the difference between a pretty chart and a result you can defend.</p>
+      <div class="steps">
+        <div class="step">
+          <div>
+            <h3>Measure the abnormal move, not the price</h3>
+            <p>For each event we take a market's move <em>minus its own normal drift</em> from the year before.</p>
+            <p class="why"><b>Why:</b> softs drifted upward for 25 years, so everything "rises after an event." Removing the drift shows what the event itself did.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>Trade the two crops against each other</h3>
+            <p>The headline object is a spread: <em>long cocoa, short sugar</em>, sized dollar-for-dollar.</p>
+            <p class="why"><b>Why:</b> the weather signal points opposite ways in the two crops, and pairing them cancels whatever moves all commodities together — the dollar, broad risk appetite.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>Use La Niña as a placebo</h3>
+            <p>Run the identical test around the opposite, cool phase.</p>
+            <p class="why"><b>Why:</b> if prices move after <em>both</em> phases, it's just seasonality or drift. A real El Niño effect should show up warm and not cool.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>Drop each event, one at a time</h3>
+            <p>Recompute the average leaving out each El Niño in turn (leave-one-out).</p>
+            <p class="why"><b>Why:</b> with only a handful of events, one dramatic year could fake the whole thing. If it survives every drop, it's a pattern — not an anecdote.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>Report honest error bars</h3>
+            <p>Newey–West (HAC) standard errors, sized to the overlapping windows.</p>
+            <p class="why"><b>Why:</b> overlapping events make naive statistics look far more certain than they are. This widens the bars to tell the truth about confidence.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>Split by strength</h3>
+            <p>Separate the record-breaking El Niños from the marginal ones.</p>
+            <p class="why"><b>Why:</b> a weak +0.6 °C blip and a +2.5 °C monster aren't the same event. Averaging them together hides any effect that only strong events produce.</p>
+          </div>
+        </div>
+        <div class="step">
+          <div>
+            <h3>Test volatility, not just direction</h3>
+            <p>Ask whether ENSO extremity predicts <em>how much</em> prices move — either way.</p>
+            <p class="why"><b>Why:</b> in commodities, the <em>size</em> of the coming move is far more predictable than its direction. This is where the real signal turned out to live.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FINDINGS ============ -->
+  <section>
+    <div class="col">
+      <span class="snum">04 — What we found</span>
+      <h2 class="sh">A story in three turns</h2>
+      <p>The naive version fails. Conditioning on strength is tempting but too thin. Then the signal shows up where you'd least expect it — in volatility.</p>
+    </div>
+
+    <div class="col">
+      <!-- Finding 1 -->
+      <div class="finding f-warm">
+        <span class="verdict v-no">Not significant</span>
+        <h3>1 · The popular directional trade doesn't hold up</h3>
+        <p>Across seven El Niños, long-cocoa/short-sugar was positive in only <strong>four</strong> at the nine-month mark — barely a coin flip — and the average was propped up almost entirely by two outlier years, 2006 and 2023. The regression agrees: the coefficient points the predicted way but comes nowhere near significance.</p>
+        <table>
+          <caption>Spread return, 9 months after each El Niño onset</caption>
+          <thead><tr><th>Event</th><th>Spread CAR @ +9m</th></tr></thead>
+          <tbody>
+            <tr><td>2002</td><td class="neg">−74.8%</td></tr>
+            <tr><td>2004</td><td class="neg">−20.6%</td></tr>
+            <tr><td>2006</td><td class="pos">+115.4%</td></tr>
+            <tr><td>2009</td><td class="pos">+49.6%</td></tr>
+            <tr><td>2014</td><td class="pos">+23.9%</td></tr>
+            <tr><td>2018</td><td class="neg">−36.9%</td></tr>
+            <tr><td>2023</td><td class="pos">+88.9%</td></tr>
+          </tbody>
+        </table>
+        <table>
+          <caption>Directional regression · return on lagged ONI (HAC errors)</caption>
+          <thead><tr><th></th><th>coef</th><th>t</th><th>p</th></tr></thead>
+          <tbody>
+            <tr><td>cocoa</td><td>+0.013</td><td>+1.27</td><td>0.20</td></tr>
+            <tr><td>sugar</td><td>−0.006</td><td>−0.71</td><td>0.48</td></tr>
+            <tr><td>spread</td><td>+0.018</td><td>+1.28</td><td>0.20</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="charts/spread_warm_vs_cold.png" alt="Long-cocoa/short-sugar cumulative abnormal return, El Niño vs La Niña control"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <div class="fig-ph" style="display:none">
+            <span class="tag">Chart · spread vs control</span><br>
+            <span class="mono">charts/spread_warm_vs_cold.png</span>
+          </div>
+        </div>
+        <figcaption><b>Fig 1.</b> The long-cocoa/short-sugar spread after El Niño (warm) vs the La Niña control. The warm line edges above the control near months 4–10 — but the bands overlap.</figcaption>
+      </figure>
+
+      <!-- Finding 2 -->
+      <div class="finding f-warm">
+        <span class="verdict v-maybe">Suggestive · not significant</span>
+        <h3>2 · Strong events look different — but the sample is tiny</h3>
+        <p>Split the events by strength and the picture sharpens: the three <strong>strong</strong> El Niños show a spread response building to roughly <strong>+55%</strong> around months 9–11, while the weak events and the cool control sit flat. It's mechanism-consistent — only a strong event stresses West African cocoa weather enough to matter, and the effect lands at the harvest-disruption horizon you'd predict in advance. But with <strong>n = 3</strong> and error bands that overlap the control, this is a hypothesis, not a proven edge.</p>
+      </div>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="charts/spread_by_intensity.png" alt="Spread CAR split by El Niño intensity"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <div class="fig-ph" style="display:none">
+            <span class="tag">Chart · by intensity</span><br>
+            <span class="mono">charts/spread_by_intensity.png</span>
+          </div>
+        </div>
+        <figcaption><b>Fig 2.</b> Spread response split by event strength. Strong El Niños (n=3) separate from weak events and the control — suggestive, but too few events to call significant.</figcaption>
+      </figure>
+
+      <!-- Finding 3 — hero -->
+      <div class="finding f-signal">
+        <span class="verdict v-yes">Significant ✓</span>
+        <h3>3 · The real signal is sugar volatility</h3>
+        <p>Flip the question from <em>which way</em> to <em>how much</em>. When the Pacific is in an extreme state — a high absolute ONI, warm or cool — <strong>sugar's realised volatility over the next six months is reliably higher</strong>. The effect is statistically significant and economically large, where the directional tests never cleared the bar. Cocoa and the spread don't make it; sugar, which sits at the crossroads of Brazilian cane, the Indian monsoon and Thai supply, does — exactly the market you'd expect to be most weather-sensitive.</p>
+        <table>
+          <caption>Next-6-month realised vol on |ONI| (HAC errors)</caption>
+          <thead><tr><th></th><th>coef</th><th>t</th><th>p</th><th>R²</th></tr></thead>
+          <tbody>
+            <tr><td>cocoa</td><td>+0.051</td><td>+1.14</td><td>0.25</td><td>0.03</td></tr>
+            <tr class="hi"><td>sugar</td><td>+0.100</td><td class="sig">+2.72</td><td class="sig">0.006</td><td>0.14</td></tr>
+            <tr><td>spread</td><td>+0.034</td><td>+0.59</td><td>0.56</td><td>0.01</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="charts/sugar_vol_regime.png" alt="Forward realised volatility in extreme vs calm ENSO regimes"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <div class="fig-ph" style="display:none">
+            <span class="tag">Chart · vol by regime</span><br>
+            <span class="mono">charts/sugar_vol_regime.png</span>
+          </div>
+        </div>
+        <figcaption><b>Fig 3.</b> Forward realised volatility when ENSO is extreme (|ONI| ≥ 1) vs calm. Sugar's bar rises materially — the finding that survives.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ THE TRADE / LIVE ============ -->
+  <section>
+    <div class="col">
+      <span class="snum">05 — The live setup</span>
+      <h2 class="sh">An out-of-sample test is arriving this winter</h2>
+      <p>As of mid-2026 the ONI has vaulted through +0.5 to roughly <strong>+0.98</strong>, and NOAA is forecasting a <strong>strong-to-super El Niño peaking around December</strong>. That is precisely the regime where the one robust result lives.</p>
+      <p class="pull">If the finding is real, the expression isn't "buy sugar." It's <b>buy sugar volatility</b> — optionality or straddles — into a confirmed strong event.</p>
+      <p>This is the honest ending: not a backtest that claims certainty, but a pre-registered prediction with a clock on it. The next few months are a genuine out-of-sample test of whether the sugar-vol signal holds.</p>
+    </div>
+
+    <figure class="fig col">
+      <div class="fig-frame">
+        <img src="charts/live_oni.png" alt="Current ONI trajectory crossing the El Niño threshold"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+        <div class="fig-ph" style="display:none">
+          <span class="tag">Chart · live ONI</span><br>
+          <span class="mono">charts/live_oni.png</span>
+        </div>
+      </div>
+      <figcaption><b>Fig 4.</b> The live ONI climbing through the +0.5 El Niño threshold into the forecast super event — the setup for the forward test.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ============ LIMITATIONS ============ -->
+  <section>
+    <div class="col">
+      <span class="snum">06 — What this doesn't prove</span>
+      <h2 class="sh">The honest caveats</h2>
+      <p>Naming these is the point, not a disclaimer bolted on the end. They're why the conclusion is phrased as a base rate, not a law.</p>
+      <ul class="lims">
+        <li>Small sample — roughly seven El Niño and five La Niña events in the price era. Everything is suggestive, not proven.</li>
+        <li>Short history — free futures data realistically starts around 2000, so the great 1982 and 1997 events aren't in the return series.</li>
+        <li>Three markets were tested, so one significant result invites a multiple-comparisons question. Sugar's t = 2.72 and its pre-specified mechanism are what keep it credible.</li>
+        <li>Front-month futures ignore roll and financing cost; a live spread would carry both.</li>
+        <li>Event dating depends on a threshold rule — reasonable people would date some onsets a month or two differently.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<footer class="wrap">
+  <div class="foot-grid">
+    <div class="mono">
+      <strong>Data</strong><br>
+      NOAA CPC — Oceanic Niño Index<br>
+      ICE softs futures (public)<br>
+      Built in Python · statsmodels · Plotly
+    </div>
+    <div class="mono">
+      <strong>Method</strong><br>
+      Event study · cumulative abnormal returns<br>
+      HAC (Newey–West) inference<br>
+      <a href="#">Full code & methodology → GitHub</a>
+    </div>
+    <div class="mono">
+      Maximilian Jost<br>
+      <span style="color:var(--ink-soft)">Sales &amp; trading · commodities · macro</span>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
