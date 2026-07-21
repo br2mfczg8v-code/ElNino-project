@@ -288,10 +288,22 @@
     </div>
   </section>
 
+  <!-- ============ FROM DATA TO TRADE ============ -->
+  <section>
+    <div class="col">
+      <span class="snum">04 — From data to the trade</span>
+      <h2 class="sh">How we landed on long cocoa, short sugar</h2>
+      <p>The spread wasn't the starting point — it's where the evidence pushed us, and the path there is the honest part of the story.</p>
+      <p>We began with the market's favourite version: <strong>El Niño lifts coffee</strong>. Against the La Niña placebo it <strong>washed out</strong> — coffee rose after warm <em>and</em> cool events alike, so the apparent signal was really just the 25-year softs bull market, not weather.</p>
+      <p>But testing the three crops side by side surfaced what the coffee story missed: cocoa and sugar reacted in <strong>opposite directions</strong>. El Niño's hot, dry West Africa reads bullish cocoa; its wetter signature across parts of the cane belt leans bearish sugar. Two opposite-signed reactions to the same cause.</p>
+      <p>That is exactly the setup for a <strong>spread</strong>. Long cocoa and short sugar captures both sides at once and — because the two legs trade against each other — cancels the dollar, risk appetite and the broad commodity drift that had fooled the naive coffee test. The trade is a <em>consequence</em> of the data, not an assumption we walked in with.</p>
+    </div>
+  </section>
+
   <!-- ============ FINDINGS ============ -->
   <section>
     <div class="col">
-      <span class="snum">04 — What we found</span>
+      <span class="snum">05 — What we found</span>
       <h2 class="sh">A story in three turns</h2>
       <p>The naive version fails. Conditioning on strength is tempting but too thin. Then the signal shows up where you'd least expect it — in volatility.</p>
     </div>
@@ -384,13 +396,32 @@
         </div>
         <figcaption><b>Fig 3.</b> Forward realised volatility when ENSO is extreme (|ONI| ≥ 1) vs calm. Sugar's bar rises materially — the finding that survives.</figcaption>
       </figure>
+
+      <!-- straddle timing -->
+      <div class="finding f-signal" style="margin-top:26px">
+        <span class="verdict v-yes">Timing</span>
+        <h3>When is the sugar straddle most lucrative?</h3>
+        <p>A straddle pays when realised volatility beats the implied vol you paid for it — so the ideal entry is just before sugar's vol runs hottest. Charting sugar's <strong>forward realised volatility by entry-month</strong> relative to onset, against its unconditional baseline, marks the window: the lucrative entries cluster in the <strong>months after onset running into the event's winter peak</strong>, where realised vol sits well above its long-run average, and the effect is sharper for strong events. For the current setup that points to entries through late 2026, into the forecast super-El-Niño peak.</p>
+      </div>
+
+      <figure class="fig">
+        <div class="fig-frame">
+          <img src="charts/sugar_vol_timing.png" alt="Sugar forward realised volatility by straddle-entry month, all vs strong El Nino"
+               onerror="this.style.display='none';this.nextElementSibling.style.display='block';">
+          <div class="fig-ph" style="display:none">
+            <span class="tag">Chart · straddle timing</span><br>
+            <span class="mono">charts/sugar_vol_timing.png</span>
+          </div>
+        </div>
+        <figcaption><b>Fig 4.</b> Sugar's forward 3-month realised vol by straddle-entry month — all El Niños vs strong only — against the unconditional baseline (dotted). Entry months where the lines sit above baseline are the lucrative window.</figcaption>
+      </figure>
     </div>
   </section>
 
   <!-- ============ THE TRADE / LIVE ============ -->
   <section>
     <div class="col">
-      <span class="snum">05 — The live setup</span>
+      <span class="snum">06 — The live setup</span>
       <h2 class="sh">An out-of-sample test is arriving this winter</h2>
       <p>As of mid-2026 the ONI has vaulted through +0.5 to roughly <strong>+0.98</strong>, and NOAA is forecasting a <strong>strong-to-super El Niño peaking around December</strong>. That is precisely the regime where the one robust result lives.</p>
       <p class="pull">If the finding is real, the expression isn't "buy sugar." It's <b>buy sugar volatility</b> — optionality or straddles — into a confirmed strong event.</p>
@@ -406,14 +437,14 @@
           <span class="mono">charts/live_oni.png</span>
         </div>
       </div>
-      <figcaption><b>Fig 4.</b> The live ONI climbing through the +0.5 El Niño threshold into the forecast super event — the setup for the forward test.</figcaption>
+      <figcaption><b>Fig 5.</b> The live ONI climbing through the +0.5 El Niño threshold into the forecast super event — the setup for the forward test.</figcaption>
     </figure>
   </section>
 
   <!-- ============ LIMITATIONS ============ -->
   <section>
     <div class="col">
-      <span class="snum">06 — What this doesn't prove</span>
+      <span class="snum">07 — What this doesn't prove</span>
       <h2 class="sh">The honest caveats</h2>
       <p>Naming these is the point, not a disclaimer bolted on the end. They're why the conclusion is phrased as a base rate, not a law.</p>
       <ul class="lims">
@@ -439,7 +470,7 @@
       <strong>Method</strong><br>
       Event study · cumulative abnormal returns<br>
       HAC (Newey–West) inference<br>
-      <a href="https://br2mfczg8v-code.github.io/ElNino-project/">Full code & methodology → GitHub</a>
+      <a href="#">Full code & methodology → GitHub</a>
     </div>
     <div class="mono">
       Maximilian Jost<br>
